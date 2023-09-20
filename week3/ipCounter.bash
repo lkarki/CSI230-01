@@ -20,3 +20,20 @@ printf "\n" >> ipCounterOutput.txt
 ip4binary=$(echo "obase=2;$i" | bc)
 done
 fi
+if [[ pf -eq 16 ]]
+then
+ip1binary=$(echo "obase=2;$myip1" | bc)
+ip2binary=$(echo "obase=2;$myip2" | bc)
+ip3binary=$(echo "obase=2;0" | bc)
+ip4binary=$(echo "obase=2;0" | bc)
+for j in {1..254}
+do
+	for i in {1..254}
+	do
+	printf '%08d'$ip1binary $ip2binary $ip3binary $ip4binary >> ipCounterOutput.txt
+	printf "\n" >> ipCounterOutput.txt
+	ip4binary=$(echo "obase=2;$i" | bc)
+	done
+ip3binary=$(echo "obase=2;$j" | bc)
+done
+fi
