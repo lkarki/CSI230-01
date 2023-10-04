@@ -1,0 +1,12 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0   181    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/1.1 301 Moved Permanently 
+Connection: close
+Content-Type: text/html
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+Location: https://208.115.107.132/
+Content-Length: 181
+

@@ -1,23 +1,20 @@
+#set -x
 function listips()
 {
-where="/var/log/apache2/access.log"
-cat "$where" | cut -d ' ' -f 1 | sort | uniq >> clientIPs.txt
+where="access.log"
+cat "$where" | cut -d ' ' -f 1 | sort | uniq | sed '/^$/d' > clientIPs.txt
 }
 
 function visitors()
 {
-where="/var/log/apache2/access.log"
 file="clientIPs.txt"
-curDate=$(date +%d/%b/%Y)
-while read -r line;
-do
-cat "$where" | grep "${curDate}" | grep "$line" | cut -d ' ' -f 1 | sort | uniq -c 
-done<$file
+num=$(cat $file | wc -l)
+echo "The number of visitors today was ${num}"
 }
 
 function badClients()
 {
-where="/var/log/apache2/access.log"
+where="access.log"
 file="clientIPs.txt"
 curDate=$(date +%d/%b/%Y)
 while read -r line;
@@ -33,13 +30,62 @@ done<$file
 
 function histogram()
 {
-where="/var/log/apache2/access.log"
-max=$(date %d)
-for i in {1..$max}
+where="access.log"
+cat "$where" | awk -F' ' '{print $4}' | awk -F':' '{print $1}' | tr -d "[" | sort -u | sed '/^$/d' |  while read pdate
 do
-curDate=$(date +$i/%b/%Y)
-things=$(cat "$where" | grep "${curDate}" | cut -d ' ' -f 9 | grep "200" | sort | uniq -c)
-numOK=$(echo "$things" | cut -d ' ' -f 6)
-echo $numOK
+things=$(cat $where | grep "$pdate" | grep " 200 " | wc -l)
+echo "Sucessful attempts on ${pdate}: $things"
 done
 }
+
+
+function blockips()
+{
+where="blacklist.txt"
+cat $where | while read pIp
+do
+iptables -A INPUT -s $pIp -j DROP
+done
+}
+
+function unblockips()
+{
+where="blacklist.txt"
+cat $where | while read ip
+do
+iptables -D INPUT -s $ip -j DROP
+done
+}
+
+function menu()
+{
+input=0
+while [[ input -ne 7 ]]
+do
+echo "1: Number of Visitors"
+echo "2: Display Visitors"
+echo "3: Show Bad Visits"
+echo "4: Block Bad Visits"
+echo "5: Reset Block Rules"
+echo "6: Show Visit Histogram"
+echo "7: Quit"
+echo "Please enter your choice: "
+
+read input
+echo
+
+case $input in
+"1" ) listips ;;
+"2" ) visitors ;;
+"3" ) badClients ;;
+"4" ) blockips ;;
+"5" ) unblockips ;;
+"6" ) histogram ;; 
+"7" ) echo "exiting" ;;
+* ) echo "Invalid input. Please enter numbers between 1 and 7"
+esac
+echo
+done
+}
+
+set +x
