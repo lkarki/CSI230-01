@@ -7,13 +7,9 @@ cat "$where" | cut -d ' ' -f 1 | sort | uniq | sed '/^$/d' > clientIPs.txt
 
 function visitors()
 {
-where="access.log"
 file="clientIPs.txt"
-curDate=$(date +%d/%b/%Y)
-while read -r line;
-do
-cat "$where" | grep "${curDate}" | grep "$line" | cut -d ' ' -f 1 | sort | uniq -c 
-done<$file
+num=$(cat $file | wc -l)
+echo "The number of visitors today was ${num}"
 }
 
 function badClients()
@@ -85,6 +81,8 @@ case $input in
 "4" ) blockips ;;
 "5" ) unblockips ;;
 "6" ) histogram ;; 
+"7" ) echo "exiting" ;;
+* ) echo "Invalid input. Please enter numbers between 1 and 7"
 esac
 echo
 done
